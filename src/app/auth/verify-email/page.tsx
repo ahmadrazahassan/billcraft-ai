@@ -48,7 +48,9 @@ function VerifyEmailContent() {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.resend({
+      
+      // Try resend first
+      const { error: resendError } = await supabase.auth.resend({
         type: "signup",
         email: email,
         options: {
@@ -56,13 +58,35 @@ function VerifyEmailContent() {
         },
       })
 
-      if (error) {
-        setResendError(error.message)
+      if (resendError) {
+        // If resend fails, try signInWithOtp as fallback (sends magic link)
+        const { error: otpError } = await supabase.auth.signInWithOtp({
+          email: email,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=/auth/confirmed`,
+            shouldCreateUser: false,
+          },
+        })
+        
+        if (otpError) {
+          // Check if it's a rate limit error
+          if (otpError.message.includes("rate") || otpError.message.includes("limit") || otpError.message.includes("60")) {
+            setResendError("Please wait a minute before requesting another email")
+          } else if (otpError.message.includes("User not found") || otpError.message.includes("not found")) {
+            setResendError("Email not found. Please sign up again.")
+          } else {
+            setResendError(otpError.message)
+          }
+        } else {
+          setResendSuccess(true)
+          setCountdown(60)
+        }
       } else {
         setResendSuccess(true)
-        setCountdown(60) // 60 second cooldown
+        setCountdown(60)
       }
-    } catch {
+    } catch (err) {
+      console.error("Resend error:", err)
       setResendError("Failed to resend email. Please try again.")
     } finally {
       setIsResending(false)
