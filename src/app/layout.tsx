@@ -6,6 +6,12 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "Billcraft - AI Invoice Generation & Client Management",
   description: "Create professional invoices in seconds. Manage clients effortlessly. Get paid faster.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/favicon.svg",
+  },
 }
 
 export default function RootLayout({
