@@ -81,9 +81,8 @@ function AuthPageContent() {
         if (error) {
           setError(error.message)
         } else {
-          // Redirect to dashboard after successful signup
-          const redirect = searchParams.get("redirect") || "/dashboard"
-          router.push(redirect)
+          // Redirect to verify email page
+          router.push(`/auth/verify-email?email=${encodeURIComponent(formData.email)}`)
         }
       } else {
         const { error } = await signIn(formData.email, formData.password)
