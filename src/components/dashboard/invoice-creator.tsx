@@ -420,19 +420,25 @@ export function InvoiceCreator() {
         <div className={cn("space-y-5", activeTab === "preview" && "hidden lg:block")}>
           {/* Template Selection */}
           <div className="p-5 rounded-2xl bg-card border border-border">
-            <h3 className="font-semibold mb-4">Choose Template</h3>
-            <div className="grid grid-cols-3 gap-2">
-              {invoiceTemplates.slice(0, 6).map((template) => (
+            <h3 className="font-semibold mb-4">Choose Template ({invoiceTemplates.length} available)</h3>
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 max-h-64 overflow-y-auto">
+              {invoiceTemplates.map((template) => (
                 <button
                   key={template.id}
                   onClick={() => setInvoiceData({ ...invoiceData, template: template.id })}
                   className={cn(
-                    "p-3 rounded-xl text-center transition-all duration-200",
-                    invoiceData.template === template.id ? "bg-foreground text-background" : "bg-secondary hover:bg-secondary/80"
+                    "p-2.5 rounded-xl text-center transition-all duration-200 relative",
+                    invoiceData.template === template.id ? "bg-foreground text-background ring-2 ring-primary" : "bg-secondary hover:bg-secondary/80"
                   )}
                 >
-                  <div className="w-6 h-6 rounded-lg mx-auto mb-2" style={{ backgroundColor: template.color }} />
-                  <p className="text-xs font-medium">{template.name}</p>
+                  {template.popular && (
+                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500" />
+                  )}
+                  {template.new && (
+                    <span className="absolute -top-1 -right-1 text-[8px] bg-primary text-white px-1 rounded">NEW</span>
+                  )}
+                  <div className="w-5 h-5 rounded-md mx-auto mb-1.5" style={{ backgroundColor: template.color }} />
+                  <p className="text-[10px] font-medium truncate">{template.name}</p>
                 </button>
               ))}
             </div>
@@ -651,12 +657,26 @@ export function InvoiceCreator() {
           
           <div className="rounded-2xl border border-border overflow-hidden shadow-lg">
             <div ref={invoiceRef}>
+              {/* Minimal Category */}
               {invoiceData.template === "minimal" && <MinimalTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "clean-slate" && <CleanSlateTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "nordic" && <NordicTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {/* Professional Category */}
               {invoiceData.template === "corporate" && <CorporateTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "executive" && <ExecutiveTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "consultant" && <ConsultantTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {/* Creative Category */}
               {invoiceData.template === "creative" && <CreativeTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
-              {invoiceData.template === "elegant" && <ElegantTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "studio" && <StudioTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "neon" && <NeonTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {/* Modern Category */}
               {invoiceData.template === "startup" && <StartupTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "saas" && <SaasTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "fintech" && <FintechTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {/* Classic Category */}
               {invoiceData.template === "classic" && <ClassicTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "elegant" && <ElegantTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
+              {invoiceData.template === "heritage" && <HeritageTemplate data={invoiceData} subtotal={subtotal} taxAmount={taxAmount} discountAmount={discountAmount} total={total} color={selectedTemplate.color} />}
             </div>
           </div>
 
@@ -1116,6 +1136,458 @@ function ClassicTemplate({ data, subtotal, taxAmount, discountAmount, total, col
       <div className="mt-8 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
         {data.notes || "Payment due within 14 days. Thank you for your business."}
       </div>
+    </div>
+  )
+}
+
+function CleanSlateTemplate({ data, subtotal, taxAmount, discountAmount, total, color }: TemplateProps) {
+  return (
+    <div className="p-10 bg-white" style={{ minHeight: '700px' }}>
+      <div className="flex justify-between items-start mb-16">
+        <div>
+          {data.companyLogo ? (
+            <img src={data.companyLogo} alt="Logo" className="w-10 h-10 object-contain mb-3" />
+          ) : (
+            <div className="w-8 h-8 rounded mb-3" style={{ backgroundColor: color }} />
+          )}
+          <p className="text-sm text-gray-500">{data.companyName}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Invoice</p>
+          <p className="text-sm text-gray-700">{data.invoiceNumber}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-16 mb-12">
+        <div>
+          <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Billed To</p>
+          <p className="text-gray-900">{data.clientName || "Client"}</p>
+          <p className="text-sm text-gray-500">{data.clientEmail}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Date</p>
+          <p className="text-sm text-gray-700">{formatDate(data.invoiceDate)}</p>
+          <p className="text-sm text-gray-500">Due: {formatDate(data.dueDate)}</p>
+        </div>
+      </div>
+
+      <div className="space-y-6 mb-12">
+        {data.lineItems.filter(item => item.description).map((item, i) => (
+          <div key={i} className="flex justify-between">
+            <span className="text-gray-700">{item.description} × {item.quantity}</span>
+            <span className="text-gray-900">{formatCurrency(item.quantity * item.rate)}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="border-t border-gray-100 pt-6">
+        <div className="flex justify-end">
+          <div className="w-48 space-y-2">
+            <div className="flex justify-between text-sm"><span className="text-gray-500">Subtotal</span><span>{formatCurrency(subtotal)}</span></div>
+            {data.tax > 0 && <div className="flex justify-between text-sm"><span className="text-gray-500">Tax</span><span>{formatCurrency(taxAmount)}</span></div>}
+            {data.discount > 0 && <div className="flex justify-between text-sm"><span className="text-gray-500">Discount</span><span>-{formatCurrency(discountAmount)}</span></div>}
+            <div className="flex justify-between pt-2 border-t border-gray-100">
+              <span className="text-gray-700">Total</span>
+              <span className="text-xl font-medium" style={{ color }}>{formatCurrency(total)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {data.notes && <p className="mt-12 text-xs text-gray-400">{data.notes}</p>}
+    </div>
+  )
+}
+
+function NordicTemplate({ data, subtotal, taxAmount, discountAmount, total, color }: TemplateProps) {
+  return (
+    <div className="p-10 bg-[#FAFAFA]" style={{ minHeight: '700px' }}>
+      <div className="flex justify-between items-center mb-12">
+        <p className="text-2xl font-light text-gray-800">{data.companyName || "Nordic Studio"}</p>
+        <p className="text-sm text-gray-400">{data.invoiceNumber}</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-12 mb-12">
+        <div>
+          <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-2">Client</p>
+          <p className="text-gray-800">{data.clientName}</p>
+          <p className="text-sm text-gray-500">{data.clientEmail}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-2">Date</p>
+          <p className="text-gray-800">{formatDate(data.invoiceDate)}</p>
+        </div>
+      </div>
+
+      <div className="space-y-4 mb-12">
+        {data.lineItems.filter(item => item.description).map((item, i) => (
+          <div key={i} className="flex justify-between py-3 border-b border-gray-200">
+            <span className="text-gray-700">{item.description}</span>
+            <span className="text-gray-800">{formatCurrency(item.quantity * item.rate)}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-end">
+        <div className="text-right">
+          <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-2">Total</p>
+          <p className="text-3xl font-light" style={{ color }}>{formatCurrency(total)}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ExecutiveTemplate({ data, subtotal, taxAmount, discountAmount, total, color }: TemplateProps) {
+  return (
+    <div className="p-10 bg-white" style={{ minHeight: '700px' }}>
+      <div className="border-b-2 border-gray-900 pb-6 mb-8">
+        <div className="flex justify-between items-end">
+          <div>
+            <p className="text-2xl font-bold text-gray-900">{data.companyName || "Executive Corp"}</p>
+            <p className="text-sm text-gray-500">{data.companyEmail} | {data.companyPhone}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-3xl font-bold" style={{ color }}>INVOICE</p>
+            <p className="text-sm text-gray-500">{data.invoiceNumber}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-8 mb-8">
+        <div className="bg-gray-50 p-4 rounded">
+          <p className="text-xs font-bold text-gray-400 mb-2">BILL TO</p>
+          <p className="font-semibold text-gray-900">{data.clientName}</p>
+          <p className="text-sm text-gray-600">{data.clientEmail}</p>
+          <p className="text-sm text-gray-600">{data.clientAddress}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm"><span className="text-gray-500">Date:</span> {formatDate(data.invoiceDate)}</p>
+          <p className="text-sm"><span className="text-gray-500">Due:</span> {formatDate(data.dueDate)}</p>
+        </div>
+      </div>
+
+      <table className="w-full mb-8">
+        <thead>
+          <tr className="bg-gray-900 text-white text-sm">
+            <th className="text-left p-3">Description</th>
+            <th className="text-right p-3">Qty</th>
+            <th className="text-right p-3">Rate</th>
+            <th className="text-right p-3">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.lineItems.filter(item => item.description).map((item, i) => (
+            <tr key={i} className="border-b border-gray-100">
+              <td className="p-3">{item.description}</td>
+              <td className="p-3 text-right">{item.quantity}</td>
+              <td className="p-3 text-right">{formatCurrency(item.rate)}</td>
+              <td className="p-3 text-right font-medium">{formatCurrency(item.quantity * item.rate)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="flex justify-end">
+        <div className="w-64 space-y-2">
+          <div className="flex justify-between"><span className="text-gray-500">Subtotal</span><span>{formatCurrency(subtotal)}</span></div>
+          {data.tax > 0 && <div className="flex justify-between"><span className="text-gray-500">Tax</span><span>{formatCurrency(taxAmount)}</span></div>}
+          <div className="flex justify-between font-bold text-lg pt-2 border-t-2 border-gray-900">
+            <span>Total</span><span style={{ color }}>{formatCurrency(total)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ConsultantTemplate({ data, subtotal, taxAmount, discountAmount, total, color }: TemplateProps) {
+  return (
+    <div className="p-10 bg-white" style={{ minHeight: '700px' }}>
+      <div className="mb-10">
+        <p className="text-sm text-gray-400 mb-1">Invoice {data.invoiceNumber}</p>
+        <p className="text-xl font-semibold text-gray-900">{data.companyName || "Consulting Services"}</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-6 mb-10 p-4 bg-gray-50 rounded-lg">
+        <div>
+          <p className="text-xs text-gray-400 mb-1">Client</p>
+          <p className="font-medium text-gray-900">{data.clientName}</p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-400 mb-1">Issue Date</p>
+          <p className="text-gray-700">{formatDate(data.invoiceDate)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-400 mb-1">Due Date</p>
+          <p className="text-gray-700">{formatDate(data.dueDate)}</p>
+        </div>
+      </div>
+
+      <div className="space-y-3 mb-10">
+        {data.lineItems.filter(item => item.description).map((item, i) => (
+          <div key={i} className="flex justify-between items-center p-4 border border-gray-100 rounded-lg">
+            <div>
+              <p className="font-medium text-gray-900">{item.description}</p>
+              <p className="text-sm text-gray-500">{item.quantity} × {formatCurrency(item.rate)}</p>
+            </div>
+            <span className="font-semibold">{formatCurrency(item.quantity * item.rate)}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-end">
+        <div className="w-64 p-4 rounded-lg" style={{ backgroundColor: `${color}10` }}>
+          <div className="flex justify-between mb-2"><span className="text-gray-600">Subtotal</span><span>{formatCurrency(subtotal)}</span></div>
+          {data.tax > 0 && <div className="flex justify-between mb-2"><span className="text-gray-600">Tax</span><span>{formatCurrency(taxAmount)}</span></div>}
+          <div className="flex justify-between font-bold text-lg pt-2 border-t" style={{ borderColor: color }}>
+            <span>Total</span><span style={{ color }}>{formatCurrency(total)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StudioTemplate({ data, subtotal, taxAmount, discountAmount, total, color }: TemplateProps) {
+  return (
+    <div className="p-10 bg-gray-900 text-white" style={{ minHeight: '700px' }}>
+      <div className="flex justify-between items-start mb-12">
+        <div>
+          <p className="text-3xl font-bold mb-2" style={{ color }}>{data.companyName || "STUDIO"}</p>
+          <p className="text-sm text-gray-400">{data.companyEmail}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm text-gray-500">Invoice</p>
+          <p className="text-lg">{data.invoiceNumber}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-8 mb-10">
+        <div>
+          <p className="text-xs text-gray-500 uppercase mb-2">Client</p>
+          <p className="font-medium">{data.clientName}</p>
+          <p className="text-sm text-gray-400">{data.clientEmail}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-500 uppercase mb-2">Date</p>
+          <p>{formatDate(data.invoiceDate)}</p>
+        </div>
+      </div>
+
+      <div className="space-y-4 mb-10">
+        {data.lineItems.filter(item => item.description).map((item, i) => (
+          <div key={i} className="flex justify-between py-4 border-b border-gray-800">
+            <span>{item.description}</span>
+            <span style={{ color }}>{formatCurrency(item.quantity * item.rate)}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-end">
+        <div className="text-right">
+          <p className="text-sm text-gray-500 mb-1">Total Amount</p>
+          <p className="text-4xl font-bold" style={{ color }}>{formatCurrency(total)}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function NeonTemplate({ data, subtotal, taxAmount, discountAmount, total, color }: TemplateProps) {
+  return (
+    <div className="p-10 bg-black text-white" style={{ minHeight: '700px' }}>
+      <div className="flex justify-between items-start mb-12">
+        <div>
+          <p className="text-4xl font-black" style={{ color, textShadow: `0 0 20px ${color}` }}>INVOICE</p>
+          <p className="text-sm text-gray-500 mt-2">{data.invoiceNumber}</p>
+        </div>
+        <div className="text-right">
+          <p className="font-bold">{data.companyName}</p>
+          <p className="text-sm text-gray-500">{data.companyEmail}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-8 mb-10 p-4 rounded-lg" style={{ border: `1px solid ${color}30` }}>
+        <div>
+          <p className="text-xs uppercase mb-2" style={{ color }}>Bill To</p>
+          <p className="font-medium">{data.clientName}</p>
+          <p className="text-sm text-gray-400">{data.clientEmail}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs uppercase mb-2" style={{ color }}>Due</p>
+          <p>{formatDate(data.dueDate)}</p>
+        </div>
+      </div>
+
+      <div className="space-y-3 mb-10">
+        {data.lineItems.filter(item => item.description).map((item, i) => (
+          <div key={i} className="flex justify-between p-4 rounded" style={{ backgroundColor: `${color}10` }}>
+            <span>{item.description}</span>
+            <span className="font-mono">{formatCurrency(item.quantity * item.rate)}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-end">
+        <div className="p-6 rounded-lg text-center" style={{ backgroundColor: `${color}20`, boxShadow: `0 0 30px ${color}30` }}>
+          <p className="text-sm text-gray-400 mb-2">Total Due</p>
+          <p className="text-4xl font-black" style={{ color }}>{formatCurrency(total)}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SaasTemplate({ data, subtotal, taxAmount, discountAmount, total, color }: TemplateProps) {
+  return (
+    <div className="p-10 bg-white" style={{ minHeight: '700px' }}>
+      <div className="flex justify-between items-center mb-10 pb-6 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold" style={{ backgroundColor: color }}>
+            {(data.companyName || "S").charAt(0)}
+          </div>
+          <span className="font-semibold text-lg">{data.companyName}</span>
+        </div>
+        <div className="px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: `${color}15`, color }}>
+          {data.invoiceNumber}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-8 mb-8">
+        <div>
+          <p className="text-xs text-gray-400 uppercase mb-2">Billed To</p>
+          <p className="font-medium">{data.clientName}</p>
+          <p className="text-sm text-gray-500">{data.clientEmail}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-400 uppercase mb-2">Invoice Date</p>
+          <p>{formatDate(data.invoiceDate)}</p>
+          <p className="text-sm text-gray-500">Due: {formatDate(data.dueDate)}</p>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-gray-100 overflow-hidden mb-8">
+        <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 text-xs font-medium text-gray-500 uppercase">
+          <span className="col-span-2">Item</span>
+          <span className="text-right">Qty</span>
+          <span className="text-right">Amount</span>
+        </div>
+        {data.lineItems.filter(item => item.description).map((item, i) => (
+          <div key={i} className="grid grid-cols-4 gap-4 p-4 border-t border-gray-100">
+            <span className="col-span-2 font-medium">{item.description}</span>
+            <span className="text-right text-gray-500">{item.quantity}</span>
+            <span className="text-right">{formatCurrency(item.quantity * item.rate)}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-end">
+        <div className="w-64 space-y-3">
+          <div className="flex justify-between text-sm"><span className="text-gray-500">Subtotal</span><span>{formatCurrency(subtotal)}</span></div>
+          {data.tax > 0 && <div className="flex justify-between text-sm"><span className="text-gray-500">Tax</span><span>{formatCurrency(taxAmount)}</span></div>}
+          <div className="flex justify-between font-semibold text-lg pt-3 border-t">
+            <span>Total</span><span style={{ color }}>{formatCurrency(total)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function FintechTemplate({ data, subtotal, taxAmount, discountAmount, total, color }: TemplateProps) {
+  return (
+    <div className="p-10 bg-gradient-to-br from-gray-900 to-gray-800 text-white" style={{ minHeight: '700px' }}>
+      <div className="flex justify-between items-start mb-10">
+        <div>
+          <p className="text-2xl font-bold">{data.companyName || "FinTech"}</p>
+          <p className="text-sm text-gray-400">{data.companyEmail}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-500 uppercase">Invoice</p>
+          <p className="font-mono text-lg">{data.invoiceNumber}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-6 mb-8 p-4 rounded-xl bg-white/5">
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Client</p>
+          <p className="font-medium">{data.clientName}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-500 mb-1">Due Date</p>
+          <p>{formatDate(data.dueDate)}</p>
+        </div>
+      </div>
+
+      <div className="space-y-2 mb-8">
+        {data.lineItems.filter(item => item.description).map((item, i) => (
+          <div key={i} className="flex justify-between p-4 rounded-lg bg-white/5">
+            <span>{item.description}</span>
+            <span className="font-mono" style={{ color }}>{formatCurrency(item.quantity * item.rate)}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="p-6 rounded-xl" style={{ background: `linear-gradient(135deg, ${color}30, ${color}10)` }}>
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400">Total Amount</span>
+          <span className="text-3xl font-bold" style={{ color }}>{formatCurrency(total)}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function HeritageTemplate({ data, subtotal, taxAmount, discountAmount, total, color }: TemplateProps) {
+  return (
+    <div className="p-10 bg-[#FDF8F3]" style={{ minHeight: '700px' }}>
+      <div className="text-center mb-10 pb-6" style={{ borderBottom: `2px solid ${color}` }}>
+        <p className="text-3xl font-serif" style={{ color }}>{data.companyName || "Heritage & Sons"}</p>
+        <p className="text-sm text-gray-500 mt-2">{data.companyEmail} • {data.companyPhone}</p>
+      </div>
+
+      <div className="flex justify-between mb-8">
+        <div>
+          <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">Invoice To</p>
+          <p className="font-serif text-lg" style={{ color }}>{data.clientName}</p>
+          <p className="text-sm text-gray-600">{data.clientEmail}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">Invoice Details</p>
+          <p className="text-sm">No: {data.invoiceNumber}</p>
+          <p className="text-sm">Date: {formatDate(data.invoiceDate)}</p>
+        </div>
+      </div>
+
+      <table className="w-full mb-8">
+        <thead>
+          <tr style={{ borderTop: `1px solid ${color}`, borderBottom: `1px solid ${color}` }}>
+            <th className="text-left py-3 font-serif">Description</th>
+            <th className="text-right py-3 font-serif">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.lineItems.filter(item => item.description).map((item, i) => (
+            <tr key={i} className="border-b border-gray-200">
+              <td className="py-3">{item.description} × {item.quantity}</td>
+              <td className="py-3 text-right">{formatCurrency(item.quantity * item.rate)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="flex justify-end">
+        <div className="w-56">
+          <div className="flex justify-between py-2"><span>Subtotal</span><span>{formatCurrency(subtotal)}</span></div>
+          {data.tax > 0 && <div className="flex justify-between py-2"><span>Tax</span><span>{formatCurrency(taxAmount)}</span></div>}
+          <div className="flex justify-between py-3 font-serif text-xl" style={{ borderTop: `2px solid ${color}` }}>
+            <span>Total</span><span style={{ color }}>{formatCurrency(total)}</span>
+          </div>
+        </div>
+      </div>
+
+      {data.notes && <p className="mt-8 text-center text-sm text-gray-500 italic">{data.notes}</p>}
     </div>
   )
 }
