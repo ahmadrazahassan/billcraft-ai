@@ -81,7 +81,9 @@ function AuthPageContent() {
         if (error) {
           setError(error.message)
         } else {
-          setSuccess("Check your email to confirm your account. You'll get 14 days free trial!")
+          // Redirect to dashboard after successful signup
+          const redirect = searchParams.get("redirect") || "/dashboard"
+          router.push(redirect)
         }
       } else {
         const { error } = await signIn(formData.email, formData.password)
